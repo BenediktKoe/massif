@@ -810,7 +810,7 @@ public class Exporter {
 			}
         } else if (allQueriedLineHandles instanceof Handle){
         	Handle handle = (Handle) allQueriedLineHandles;
-            if(!addedLineHandles.contains(handle.getData())){
+            if(!addedLineHandles.contains(handle.getValue())){
         		linesToDelete.add(handle);
         	}
         }
@@ -917,12 +917,12 @@ public class Exporter {
         	// TODO might be needed to check for null
         	//return null;
 		}
-		if(Handle.asHandle(addedLineHandle).getData().equals(prevdata)){
+		if(Handle.asHandle(addedLineHandle).getValue().equals(prevdata)){
 			// FIXME this is only a hotfix for State (out)ports
 			addLine = commandFactory.addLine().addParam(system).addParam(fromBlockName+"/State").addParam(dstPort).addParam("AutoRouting").addParam("on");
 			addedLineHandle = addLine.execute();
         }
-        prevdata = Handle.asHandle(addedLineHandle).getData(); 
+        prevdata = Handle.asHandle(addedLineHandle).getValue(); 
         
         // IF the line name is not artificially created while importing, the exporter sets the name
         if (addedLineHandle != null && singleConnection.getLineName() != null) {

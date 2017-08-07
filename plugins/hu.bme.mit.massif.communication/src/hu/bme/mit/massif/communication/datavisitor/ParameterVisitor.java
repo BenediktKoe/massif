@@ -65,7 +65,7 @@ public class ParameterVisitor implements IMatlabDataVisitor {
 
     @Override
     public void visit(StructMatlabData structMatlabData) {
-        // TODO Unsupported operation? A struct should be created again using the given datas?
+        // TODO Unsupported operation? A struct should be created again using the given data?
     }
 
 	@Override

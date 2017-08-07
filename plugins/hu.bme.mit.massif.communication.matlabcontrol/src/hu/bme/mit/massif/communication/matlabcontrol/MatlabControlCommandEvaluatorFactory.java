@@ -27,7 +27,7 @@ public class MatlabControlCommandEvaluatorFactory implements ICommandEvaluatorFa
 		// Get the parameters
 		String matlabPath = (String) parameters.get("matlabPath");
 		
-		ICommandEvaluator result = new CommandEvaluatorMCImpl(matlabPath);
+		ICommandEvaluator result = new MatlabControlCommandEvaluator(matlabPath);
 		
         return result;
 	}

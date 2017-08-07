@@ -10,11 +10,11 @@
  *******************************************************************************/
 package hu.bme.mit.massif.examples.api.common;
 
+import br.com.embraer.massif.commandevaluation.client.MatlabClient;
+import br.com.embraer.massif.commandevaluation.exception.MatlabRMIException;
 import hu.bme.mit.massif.communication.ICommandEvaluator;
 import hu.bme.mit.massif.communication.commandevaluation.CommandEvaluatorImpl;
 import hu.bme.mit.massif.examples.api.settings.ImporterExampleSettings;
-import br.com.embraer.massif.commandevaluation.client.MatlabClient;
-import br.com.embraer.massif.commandevaluation.exception.MatlabRMIException;
 
 public class MassifExampleHelper {
 

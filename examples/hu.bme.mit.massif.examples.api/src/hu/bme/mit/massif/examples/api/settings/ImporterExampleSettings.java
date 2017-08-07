@@ -27,12 +27,12 @@ public class ImporterExampleSettings {
 	// The registered service name
 	public static String SERVICE_NAME = "MatlabModelProviderr2012a1772";
 	// The path to the Simulink model, end it with a filesystem separator (the file name is not part of this path)
-	public static String SIMULINK_MODEL_PATH = "resources\\importer\\";
+	public static String SIMULINK_MODEL_PATH = "resources" + File.separator + "importer" + File.separator;
 	// The name of the of the Simulink model (the .slx or .mdl file without file extension)
 	public static String SIMULINK_MODEL_NAME = "sldemo_clutch_import";
 	// The traversal strategy of the importer
 	public static ImportMode IMPORT_MODE = ImportMode.FLATTENING;
 	// The path where the imported models are saved
-	public static String OUTPUT_DIRECTORY = /*e.g.:*/ "c:\\" + File.separator + "output";
+	public static String OUTPUT_DIRECTORY = /*e.g.:*/ "c:" + File.separator + "output";
 
 }

@@ -640,7 +640,7 @@ public class Importer {
         for (Entry<InPortBlock, MatlabString> shadowInportBlockEntry : shadowInports.entrySet()) {
             // Get the corresponding inport block and the outports
             MatlabString inportBlockName = shadowInportBlockEntry.getValue();
-            InPortBlock inportBlock = inportBlocksByName.get(inportBlockName.getData());
+            InPortBlock inportBlock = inportBlocksByName.get(inportBlockName.getValue());
             InPortBlock shadowInportBlock = shadowInportBlockEntry.getKey();
             OutPort shadowOutPort = shadowInportBlock.getOutports().get(0);
             OutPort outPort = inportBlock.getOutports().get(0);
@@ -785,7 +785,7 @@ public class Importer {
 
         // For each sub block do the traversing
         for (IVisitableMatlabData subBlockHandle : subBlockHandles.getDatas()) {
-            if (Handle.getHandleData(subBlockHandle).compareTo(parentBlockHandle.getData()) != 0) {
+            if (Handle.getHandleData(subBlockHandle).compareTo(parentBlockHandle.getValue()) != 0) {
                 createBlock(parentBlock, (Handle) subBlockHandle);
             }
         }
@@ -1177,7 +1177,7 @@ public class Importer {
 
                     // There is a connection on the diagram that leads to nowhere
                     // For it has no effect, skip it
-                    if (dstPortHandle.getData() < -0.9) {
+                    if (dstPortHandle.getValue() < -0.9) {
                         continue;
                     }
 
@@ -1185,7 +1185,7 @@ public class Importer {
                     SingleConnection line = SimulinkFactory.eINSTANCE.createSingleConnection();
 
                     // Add the destination input port to line
-                    line.setTo(inPorts.get(dstPortHandle.getData()));
+                    line.setTo(inPorts.get(dstPortHandle.getValue()));
 
                     // TODO in the following lines pay attention to cases, when blocks in the model are
                     // commented out, but their connections still present. In such cases a nullPointerException
@@ -1201,7 +1201,7 @@ public class Importer {
                     String dstParentLocalName = dstParentName.substring(dstParentName.lastIndexOf('/') + 1);
 
                     String source = srcParentLocalName + ":" + outPorts.get(cachedOutPortHandles.get(outp)).getName();
-                    String destination = dstParentLocalName + ":" + inPorts.get(dstPortHandle.getData()).getName();
+                    String destination = dstParentLocalName + ":" + inPorts.get(dstPortHandle.getValue()).getName();
                     String lineFQN = "from: " + source + " -- to: " + destination;
 
                     createAndSetSimulinkRef(lineFQN, outp.getSimulinkRef(), line);

@@ -18,14 +18,14 @@ package hu.bme.mit.massif.communication.datatype;
  */
 public abstract class PrimitiveMatlabData<T> implements IVisitableMatlabData {
 
-    protected T data;
+    protected T value;
 
-    public T getData() {
-        return data;
+    public T getValue() {
+        return value;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public void setValue(T data) {
+        this.value = data;
     }
 
     // TODO revisit escaping of characters

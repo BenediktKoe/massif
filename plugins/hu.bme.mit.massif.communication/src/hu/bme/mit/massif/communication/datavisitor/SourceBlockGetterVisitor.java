@@ -47,8 +47,8 @@ public class SourceBlockGetterVisitor implements IMatlabDataVisitor {
     public void visit(MatlabString matlabString) {
         // It is a single block
         // If it is not from the commonly used blocks lib, set it as source
-        if (!matlabString.getData().contains("Commonly Used Blocks")) {
-            sourceBlockFQN = matlabString.getData();
+        if (!matlabString.getValue().contains("Commonly Used Blocks")) {
+            sourceBlockFQN = matlabString.getValue();
         }
     }
 

@@ -21,7 +21,7 @@ public class Handle extends PrimitiveMatlabData<Double> {
     }
 
     public Handle(double data) {
-        this.data = data;
+        this.value = data;
     }
 
     public static Handle asHandle(IVisitableMatlabData data) {
@@ -29,7 +29,7 @@ public class Handle extends PrimitiveMatlabData<Double> {
     }
 
     public static Double getHandleData(IVisitableMatlabData data) {
-        return ((Handle) data).data;
+        return ((Handle) data).value;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Handle extends PrimitiveMatlabData<Double> {
 
     @Override
     public String toString() {
-        return data.toString();
+        return value.toString();
     }
 
 }

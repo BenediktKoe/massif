@@ -21,12 +21,12 @@ public class MatlabString extends PrimitiveMatlabData<String> {
     }
 
     @Override
-    public String getData() {
-        return data.replaceAll("\\n", " ");
+    public String getValue() {
+        return value.replaceAll("\\n", " ");
     }
     
     public MatlabString(String data) {
-        this.data = data.replaceAll("\\n", " ");
+        this.value = data.replaceAll("\\n", " ");
     }
 
     public static MatlabString asMatlabString(IVisitableMatlabData data) {
@@ -34,7 +34,7 @@ public class MatlabString extends PrimitiveMatlabData<String> {
     }
 
     public static String getMatlabStringData(IVisitableMatlabData data) {
-        return ((MatlabString) data).data.replaceAll("\\n", " ");
+        return ((MatlabString) data).value.replaceAll("\\n", " ");
     }
 
     @Override
@@ -46,7 +46,7 @@ public class MatlabString extends PrimitiveMatlabData<String> {
     @Override
     public String toString() {
         // the string "/" is not always has to be escaped, this case has to be handled differently
-        return "'" + data.replaceAll("'", "''").replace('\n', ' ') + "'";
+        return "'" + value.replaceAll("'", "''").replace('\n', ' ') + "'";
     }
 
 }

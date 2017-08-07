@@ -16,30 +16,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StructMatlabData implements IVisitableMatlabData {
-    private Map<String, IVisitableMatlabData> datas;
+    private Map<String, IVisitableMatlabData> dataMap;
 
     public StructMatlabData() {
-        datas = new HashMap<String, IVisitableMatlabData>();
+        dataMap = new HashMap<String, IVisitableMatlabData>();
     }
 
     public int size() {
-        return datas.size();
+        return dataMap.size();
     }
 
     public Map<String, IVisitableMatlabData> getDatas() {
-        return datas;
+        return dataMap;
     }
 
     public void addData(String fieldName, IVisitableMatlabData data) {
-        datas.put(fieldName, data);
+        dataMap.put(fieldName, data);
     }
 
     public IVisitableMatlabData getData(String fieldName) {
-        return datas.get(fieldName);
+        return dataMap.get(fieldName);
     }
 
-    public void setDatas(Map<String, IVisitableMatlabData> datas) {
-        this.datas = datas;
+    public void setDatas(Map<String, IVisitableMatlabData> dataMap) {
+        this.dataMap = dataMap;
     }
 
     public static StructMatlabData asStructMatlabData(IVisitableMatlabData data) {
@@ -50,7 +50,7 @@ public class StructMatlabData implements IVisitableMatlabData {
     }
 
     public static Map<String, IVisitableMatlabData> getStructMatlabDataData(IVisitableMatlabData data) {
-        return asStructMatlabData(data).datas;
+        return asStructMatlabData(data).dataMap;
     }
 
     @Override

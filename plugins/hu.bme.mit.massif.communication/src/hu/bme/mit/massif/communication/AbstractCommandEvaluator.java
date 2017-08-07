@@ -1,17 +1,8 @@
-/*******************************************************************************
- * Copyright (c) 2010, 2014, Embraer S.A., Budapest University of Technology and Economics
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution, and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *
- * Contributors: 
- *     Abel Hegedus - initial API and implementation 
- *******************************************************************************/
-package hu.bme.mit.massif.communication.matlabcontrol;
+package hu.bme.mit.massif.communication;
 
-import hu.bme.mit.massif.communication.CommandEvaluationException;
-import hu.bme.mit.massif.communication.ICommandEvaluator;
+import java.util.HashMap;
+import java.util.Map;
+
 import hu.bme.mit.massif.communication.datatype.CellMatlabData;
 import hu.bme.mit.massif.communication.datatype.Handle;
 import hu.bme.mit.massif.communication.datatype.IVisitableMatlabData;
@@ -19,79 +10,59 @@ import hu.bme.mit.massif.communication.datatype.Logical;
 import hu.bme.mit.massif.communication.datatype.MatlabString;
 import hu.bme.mit.massif.communication.datatype.StructMatlabData;
 
-import java.util.HashMap;
-import java.util.Map;
+public class AbstractCommandEvaluator implements ICommandEvaluator {
 
-import matlabcontrol.MatlabConnectionException;
-import matlabcontrol.MatlabInvocationException;
-import matlabcontrol.MatlabProxy;
-import matlabcontrol.MatlabProxyFactory;
-import matlabcontrol.MatlabProxyFactoryOptions;
-import matlabcontrol.MatlabProxyFactoryOptions.Builder;
-
-/**
- * Class responsible for the low level operations with MATLAB
- * 
- * (The successor class of BasicOperationsApi utility class)
- */
-public class CommandEvaluatorMCImpl implements ICommandEvaluator {
-	
-	private static MatlabProxyFactory factory = null;
-	private static MatlabProxy proxy = null;
-	
-	private Builder optionsBuilder = new MatlabProxyFactoryOptions.Builder();
-	private MatlabProxyFactoryOptions options = null;
-	
-    public CommandEvaluatorMCImpl(String matlabPath) {
-
-        if (!"".equals(matlabPath)) {
-            optionsBuilder = optionsBuilder.setMatlabLocation(matlabPath);
-        }
-        options = optionsBuilder.build();
-        factory = new MatlabProxyFactory(options);
-        try {
-            proxy = factory.getProxy();
-        } catch (MatlabConnectionException e) {
-        }
-    }
+    protected IMatlabWrapper matlabInstance;
 
     @Override
+    public IVisitableMatlabData evaluateCommands(String[] commandStrings, int outputArgumentCount) {
+        IVisitableMatlabData result = null;
+        if (commandStrings.length > 1) {
+            result = new CellMatlabData();
+            for (String commandString : commandStrings) {
+                CellMatlabData.asCellMatlabData(result).getDatas()
+                        .add(evaluateCommand(commandString, outputArgumentCount));
+            }
+        } else if (commandStrings.length == 1){
+            result = evaluateCommand(commandStrings[0], outputArgumentCount);
+        }
+        return result;
+    }
+    
+	@Override
     public IVisitableMatlabData evaluateCommand(String command, int nargout) {
 
         IVisitableMatlabData result = null;
-        try {
 
-            if (nargout > 1) {
-                String resultString = "[";
-                for (Integer i = 0; i < nargout; i++) {
-                    resultString = resultString.concat("r" + i.toString() + ",");
-                }
-
-                resultString = resultString.replaceAll(",$", "").concat("]");
-
-                proxy.returningEval(resultString + " = " + command, 0);
-                proxy.returningEval("ImporterTmpResult = " + resultString.replace("[", "{").replace("]", "}"), 0);
-                result = dataRetriever();
-            } else if (nargout == 1) {
-                proxy.returningEval("ImporterTmpResult = " + command, 0);
-                result = dataRetriever();
-            } else {
-                proxy.returningEval(command, 0);
-                result = null;
+        if (nargout > 1) {
+            String resultString = "[";
+            for (Integer i = 0; i < nargout; i++) {
+                resultString = resultString.concat("r" + i.toString() + ",");
             }
 
-        } catch (MatlabInvocationException e) {
-        	throw new CommandEvaluationException("Exception occurred while evaluating command!", e);
-		}
+            resultString = resultString.replaceAll(",$", "").concat("]");
+
+            matlabInstance.returningEval(resultString + " = " + command, 0);
+            matlabInstance.returningEval("ImporterTmpResult = " + resultString.replace("[", "{").replace("]", "}"), 0);
+            result = dataRetriever();
+        } else if (nargout == 1) {
+            matlabInstance.returningEval("ImporterTmpResult = " + command, 0);
+            result = dataRetriever();
+        } else {
+            matlabInstance.returningEval(command, 0);
+            result = null;
+        }
+
         return result;
     }
 
-    private IVisitableMatlabData processStruct(String structName, Object[] data) throws MatlabInvocationException {
+
+    private IVisitableMatlabData processStruct(String structName, Object[] data) {
 
         // //////
         // DEBUG
         // Get all data in the struct with the fieldnames
-        Object[] _data = (Object[]) proxy.returningEval(structName + "(1:end)", 1)[0];
+        Object[] _data = (Object[]) matlabInstance.returningEval(structName + "(1:end)", 1)[0];
 
         // In case of a struct data[0] is always a String[] containing the field names
         Map<String, IVisitableMatlabData> fieldsToValues = new HashMap<String, IVisitableMatlabData>();
@@ -111,7 +82,7 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
                     String currVarName = structName + "(" + (i + 1) + ")." + fieldName;
 
                     // Determine the type of each field
-                    String type = (String) proxy.returningEval("class(" + currVarName + ")", 1)[0];
+                    String type = (String) matlabInstance.returningEval("class(" + currVarName + ")", 1)[0];
                     // Branch according to the type
                     IVisitableMatlabData fieldValue = null;
                     if ("struct".equals(type)) {
@@ -135,7 +106,7 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
                     String currVarName = structName + "(" + (i + 1) + ")." + fieldName;
 
                     // Determine the type of each field
-                    String type = (String) proxy.returningEval("class(" + currVarName + ")", 1)[0];
+                    String type = (String) matlabInstance.returningEval("class(" + currVarName + ")", 1)[0];
                     // Branch according to the type
                     IVisitableMatlabData fieldValue = null;
                     if ("struct".equals(type)) {
@@ -156,10 +127,10 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
     }
 
 
-    private IVisitableMatlabData dataRetriever() throws MatlabInvocationException {
+    private IVisitableMatlabData dataRetriever() {
         IVisitableMatlabData result = null;
-        String type = (String) proxy.returningEval("class(ImporterTmpResult)", 1)[0];
-        Object[] data = proxy.returningEval("ImporterTmpResult(1:end)", 1);
+        String type = (String) matlabInstance.returningEval("class(ImporterTmpResult)", 1)[0];
+        Object[] data = matlabInstance.returningEval("ImporterTmpResult(1:end)", 1);
         // Switch according to the result of type = class(ImporterTmpResult)
         if (type.equals("struct")) {
             result = processStruct("ImporterTmpResult", data);
@@ -176,14 +147,14 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
             if (data instanceof double[]) {
                 if (((double[]) data).length == 1) {
                     Handle handle = new Handle();
-                    handle.setData((((double[]) data)[0]));
+                    handle.setValue((((double[]) data)[0]));
                     result = handle;
                 } else {
                     double[] handles = (double[]) data;
                     CellMatlabData compositeData = new CellMatlabData();
                     for (int i = 0; i < handles.length; i++) {
                         Handle handle = new Handle();
-                        handle.setData((((double[]) (data))[i]));
+                        handle.setValue((((double[]) (data))[i]));
                         compositeData.addData(handle);
                     }
                     result = compositeData;
@@ -195,7 +166,7 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
                     // TODO check if iteration with i is really needed, or can be indexed with 0
                     for (int i = 0; i < ((double[]) ((Object[]) (data))[j]).length; i++) {
                         Handle handle = new Handle();
-                        handle.setData(((double[]) ((Object[]) (data))[j])[i]);
+                        handle.setValue(((double[]) ((Object[]) (data))[j])[i]);
                         compositeData.addData(handle);
                     }
                 }
@@ -205,7 +176,7 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
         	if (data instanceof boolean[]) {
                 if (((boolean[]) data).length == 1) {
                     Logical logical = new Logical();
-                    logical.setData((((boolean[]) data)[0]));
+                    logical.setValue((((boolean[]) data)[0]));
                     result = logical;
                 }
         	}
@@ -213,7 +184,7 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
             // TODO handle char arrays
             MatlabString string = new MatlabString();
             String charData = (String) data;
-            string.setData(charData.replaceAll("\n", " "));
+            string.setValue(charData.replaceAll("\n", " "));
             // string.setData(((String) (data[0])).replace("\n"," "));
             result = string;
         } else if (type.equals("cell")) {
@@ -234,13 +205,13 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
                 double[] doubleData = (double[]) data;
                 if (doubleData.length == 1) {
                     Handle handle = new Handle();
-                    handle.setData(doubleData[0]);
+                    handle.setValue(doubleData[0]);
                     cellData.addData(handle);
                 } else {
                     CellMatlabData containedArrayData = new CellMatlabData();
                     for (int i = 0; i < doubleData.length; i++) {
                         Handle handle = new Handle();
-                        handle.setData(doubleData[i]);
+                        handle.setValue(doubleData[i]);
                         containedArrayData.addData(handle);
                     }
                     cellData.addData(containedArrayData);
@@ -249,13 +220,13 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
                 String[] stringData = (String[]) data;
                 if (stringData.length == 1) {
                     MatlabString string = new MatlabString();
-                    string.setData(stringData[0]);
+                    string.setValue(stringData[0]);
                     cellData.addData(string);
                 } else {
                     CellMatlabData containedArrayData = new CellMatlabData();
                     for (int i = 0; i < stringData.length; i++) {
                         MatlabString string = new MatlabString();
-                        string.setData(stringData[i]);
+                        string.setValue(stringData[i]);
                         containedArrayData.addData(string);
                     }
                     cellData.addData(containedArrayData);
@@ -263,7 +234,7 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
 
             } else if (data instanceof String) {
                 MatlabString string = new MatlabString();
-                string.setData((String) data);
+                string.setValue((String) data);
                 cellData.addData(string);
             }
 
@@ -271,19 +242,5 @@ public class CommandEvaluatorMCImpl implements ICommandEvaluator {
         return cellData;
     }
 
-    @Override
-    public IVisitableMatlabData evaluateCommands(String[] commandStrings, int outputArgumentCount) {
-        IVisitableMatlabData result = null;
-        if (commandStrings.length > 1) {
-            result = new CellMatlabData();
-            for (String commandString : commandStrings) {
-                CellMatlabData.asCellMatlabData(result).getDatas()
-                        .add(evaluateCommand(commandString, outputArgumentCount));
-            }
-        } else if (commandStrings.length == 1){
-            result = evaluateCommand(commandStrings[0], outputArgumentCount);
-        }
-        return result;
-    }
-
+	
 }

@@ -20,30 +20,30 @@ import java.util.List;
  */
 public class CellMatlabData implements IVisitableMatlabData {
 
-    private List<IVisitableMatlabData> datas;
+    private List<IVisitableMatlabData> dataList;
 
     public CellMatlabData() {
-        datas = new ArrayList<IVisitableMatlabData>();
+        dataList = new ArrayList<IVisitableMatlabData>();
     }
 
     public int size() {
-        return datas.size();
+        return dataList.size();
     }
 
     public List<IVisitableMatlabData> getDatas() {
-        return datas;
+        return dataList;
     }
 
     public void addData(IVisitableMatlabData data) {
-        datas.add(data);
+        dataList.add(data);
     }
 
     public IVisitableMatlabData getData(int i) {
-        return datas.get(i);
+        return dataList.get(i);
     }
 
     public void setDatas(List<IVisitableMatlabData> datas) {
-        this.datas = datas;
+        this.dataList = datas;
     }
 
     public static CellMatlabData asCellMatlabData(IVisitableMatlabData data) {
@@ -57,7 +57,7 @@ public class CellMatlabData implements IVisitableMatlabData {
     }
 
     public static List<IVisitableMatlabData> getCellMatlabDataData(IVisitableMatlabData data) {
-        return asCellMatlabData(data).datas;
+        return asCellMatlabData(data).dataList;
     }
 
     @Override

@@ -21,7 +21,7 @@ public class Logical extends PrimitiveMatlabData<Boolean> {
     }
 
     public Logical(Boolean data) {
-        this.data = data;
+        this.value = data;
     }
 
     public static Logical asHandle(IVisitableMatlabData data) {
@@ -29,7 +29,7 @@ public class Logical extends PrimitiveMatlabData<Boolean> {
     }
 
     public static Boolean getLogicalData(IVisitableMatlabData data) {
-        return ((Logical) data).data;
+        return ((Logical) data).value;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Logical extends PrimitiveMatlabData<Boolean> {
 
     @Override
     public String toString() {
-        return data.toString();
+        return value.toString();
     }
 
 }
