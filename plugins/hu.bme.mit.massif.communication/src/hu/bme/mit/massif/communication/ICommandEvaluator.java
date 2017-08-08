@@ -10,36 +10,33 @@
  *******************************************************************************/
 package hu.bme.mit.massif.communication;
 
+import java.util.List;
+
 import hu.bme.mit.massif.communication.datatype.IVisitableMatlabData;
 
 /**
- * Class responsible for the low level operations with MATLAB
+ * Interface for classes that are responsible for the low level interactions
+ * with MATLAB
  * 
- * (The successor class of the removed <code>BasicOperationsApi</code> utility class)
+ * (The successor class of the removed <code>BasicOperationsApi</code> utility
+ * class)
  */
 public interface ICommandEvaluator {
 
-    /**
-     * Evaluate a given sting as a MATLAB command
-     * 
-     * @param command
-     *            the MATLAB command
-     * @param nargout
-     *            the number of expected return values in MATLAB
-     * @return the result data
-     */
-    public IVisitableMatlabData evaluateCommand(String command, int nargout);
-
-    /**
-     * Evaluate given string array as an array of commands. The return values are put into a newly created
-     * CellMatlabData.
-     * 
-     * @param commandStrings
-     *            the array containig the command strings
-     * @param outputArgumentCount
-     *            the output argument count for each command (must be the same for every command in the given array)
-     * @return
-     */
-    public IVisitableMatlabData evaluateCommands(String[] commandStrings, int outputArgumentCount);
+	/**
+	 * Evaluates a given command with the provided parameters. Multiple return values are
+	 * put into a newly created CellMatlabData.
+	 * 
+	 * @param commandName
+	 *            the name of the command (or function) to be executed
+	 * @param params
+	 *            a list containing the command parameters
+	 * @param outputArgumentCount
+	 *            the expected number of results provided by MATLAB
+	 * @return the result encapsulated in an <code>IVisitableMatlabData</code>
+	 *         object
+	 */
+	public IVisitableMatlabData evaluateCommands(String commandName, List<IVisitableMatlabData> params,
+			int outputArgumentCount);
 
 }

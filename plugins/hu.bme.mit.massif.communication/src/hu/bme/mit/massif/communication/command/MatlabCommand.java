@@ -12,6 +12,7 @@ package hu.bme.mit.massif.communication.command;
 
 import hu.bme.mit.massif.communication.CommandEvaluationException;
 import hu.bme.mit.massif.communication.ICommandEvaluator;
+import hu.bme.mit.massif.communication.command.util.CommandStringGenerator;
 import hu.bme.mit.massif.communication.datatype.Handle;
 import hu.bme.mit.massif.communication.datatype.IVisitableMatlabData;
 import hu.bme.mit.massif.communication.datatype.MatlabString;
@@ -38,7 +39,6 @@ import java.util.List;
 public abstract class MatlabCommand {
 
     protected List<IVisitableMatlabData> params;
-    protected String[] commandStrings;
     private ICommandEvaluator commandEvaluator;
 
     // private MatlabClient matlabClient;
@@ -82,14 +82,6 @@ public abstract class MatlabCommand {
         return this.params;
     }
 
-    public String[] getCommandStrings() {
-        return Arrays.copyOf(commandStrings, commandStrings.length);
-    }
-
-    public void setCommandString(String[] commandStrings) {
-        this.commandStrings = Arrays.copyOf(commandStrings, commandStrings.length);
-    }
-
     /**
      * Execute the represented command
      * 
@@ -97,25 +89,8 @@ public abstract class MatlabCommand {
      * @throws CommandEvaluationException if an unexpected error occurred during execution of the command
      */
     public final IVisitableMatlabData execute() {
-
-        if (params.size() > 0) {
-
-            commandStrings = new String[] { this.getCommandName() + "(" };
-            ParameterVisitor parameterVisitor = new ParameterVisitor(commandStrings);
-            for (IVisitableMatlabData data : params) {
-                data.acceptDataVisitor(parameterVisitor);
-            }
-            commandStrings = parameterVisitor.getCommandStrings();
-            for (int i = 0; i < commandStrings.length; i++) {
-                commandStrings[i] = commandStrings[i].replaceAll(",$", ""); // remove the last unnecessary comma
-                commandStrings[i] = commandStrings[i] + ")";
-            }
-
-        } else {
-            commandStrings = new String[] { this.getCommandName() };
-        }
-        // Executing command
-        return commandEvaluator.evaluateCommands(commandStrings, getOutputArgumentCount());
+    	// Executing command
+        return commandEvaluator.evaluateCommands(this.getCommandName(), params, getOutputArgumentCount());
     }
 
     /**

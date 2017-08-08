@@ -1,8 +1,10 @@
 package hu.bme.mit.massif.communication;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import hu.bme.mit.massif.communication.command.util.CommandStringGenerator;
 import hu.bme.mit.massif.communication.datatype.CellMatlabData;
 import hu.bme.mit.massif.communication.datatype.Handle;
 import hu.bme.mit.massif.communication.datatype.IVisitableMatlabData;
@@ -14,8 +16,13 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
 
     protected IMatlabWrapper matlabInstance;
 
-    @Override
-    public IVisitableMatlabData evaluateCommands(String[] commandStrings, int outputArgumentCount) {
+	@Override
+	public IVisitableMatlabData evaluateCommands(String commandName, List<IVisitableMatlabData> params,
+			int outputArgumentCount) {
+		return internalEvaluateCommands(CommandStringGenerator.generate(commandName, params), outputArgumentCount);
+	}
+
+    private IVisitableMatlabData internalEvaluateCommands(String[] commandStrings, int outputArgumentCount) {
         IVisitableMatlabData result = null;
         if (commandStrings.length > 1) {
             result = new CellMatlabData();
@@ -29,8 +36,7 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
         return result;
     }
     
-	@Override
-    public IVisitableMatlabData evaluateCommand(String command, int nargout) {
+    protected IVisitableMatlabData evaluateCommand(String command, int nargout) {
 
         IVisitableMatlabData result = null;
 
@@ -242,5 +248,4 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
         return cellData;
     }
 
-	
 }
