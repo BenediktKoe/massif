@@ -73,7 +73,7 @@ public class GotoAdapter extends DefaultBlockAdapter {
         CellMatlabData fromNamesAndHandles = CellMatlabData.asCellMatlabData(getFromsForGoto.execute());
         fromNames = new LinkedList<String>();
 
-        for (IVisitableMatlabData fromData : fromNamesAndHandles.getDatas()) {
+        for (IVisitableMatlabData fromData : fromNamesAndHandles.getDataList()) {
             StructMatlabData structFromData = (StructMatlabData) fromData;
             if (structFromData == null) {
                 // This means that there are no corresponding from blocks

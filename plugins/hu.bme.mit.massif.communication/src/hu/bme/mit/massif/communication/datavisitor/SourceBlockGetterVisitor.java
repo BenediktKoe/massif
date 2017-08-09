@@ -29,7 +29,7 @@ public class SourceBlockGetterVisitor implements IMatlabDataVisitor {
     public void visit(CellMatlabData compositeData) {
         // Multiple blocks were found with the specified type
         // TODO not sure, if the first match is the best
-        for (IVisitableMatlabData fqn : compositeData.getDatas()) {
+        for (IVisitableMatlabData fqn : compositeData.getDataList()) {
             if (!fqn.toString().contains("Commonly Used Blocks")) {
                 sourceBlockFQN = MatlabString.getMatlabStringData(fqn);
                 break;

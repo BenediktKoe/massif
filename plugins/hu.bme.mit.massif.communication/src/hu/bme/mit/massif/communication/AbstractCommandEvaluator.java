@@ -27,7 +27,7 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
         if (commandStrings.length > 1) {
             result = new CellMatlabData();
             for (String commandString : commandStrings) {
-                CellMatlabData.asCellMatlabData(result).getDatas()
+                CellMatlabData.asCellMatlabData(result).getDataList()
                         .add(evaluateCommand(commandString, outputArgumentCount));
             }
         } else if (commandStrings.length == 1){
@@ -62,8 +62,21 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
         return result;
     }
 
+    protected IVisitableMatlabData dataRetriever() {
+        IVisitableMatlabData result = null;
+        String type = (String) matlabInstance.returningEval("class(ImporterTmpResult)", 1)[0];
+        Object[] data = matlabInstance.returningEval("ImporterTmpResult(1:end)", 1);
+        // Switch according to the result of type = class(ImporterTmpResult)
+        if (type.equals("struct")) {
+            result = processStruct("ImporterTmpResult", data);
+        } else {
+            result = processNonStruct("ImporterTmpResult", type, data[0]);
+        }
+        return result;
+    }
+    
 
-    private IVisitableMatlabData processStruct(String structName, Object[] data) {
+    protected IVisitableMatlabData processStruct(String structName, Object[] data) {
 
         // //////
         // DEBUG
@@ -72,16 +85,16 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
 
         // In case of a struct data[0] is always a String[] containing the field names
         Map<String, IVisitableMatlabData> fieldsToValues = new HashMap<String, IVisitableMatlabData>();
-        Object[] structDatas = ((Object[]) _data[1]);
+        Object[] structDataArray = ((Object[]) _data[1]);
 
         IVisitableMatlabData result = null;
-        if (structDatas.length <= 0) {
+        if (structDataArray.length <= 0) {
             // TODO null length array of struct
             return null;
-        } else if (structDatas.length == 1) {
+        } else if (structDataArray.length == 1) {
             StructMatlabData structResult = new StructMatlabData();
 
-            for (int i = 0; i < structDatas.length; i++) {
+            for (int i = 0; i < structDataArray.length; i++) {
                 for (int j = 0; j < ((String[]) _data[0]).length; j++) {
                     String fieldName = ((String[]) _data[0])[j];
                     // Get the reference name for the field. Caution: MATLAB indexing
@@ -92,9 +105,9 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
                     // Branch according to the type
                     IVisitableMatlabData fieldValue = null;
                     if ("struct".equals(type)) {
-                        fieldValue = processStruct(currVarName, (Object[]) (((Object[]) structDatas[i])[j]));
+                        fieldValue = processStruct(currVarName, (Object[]) (((Object[]) structDataArray[i])[j]));
                     } else {
-                        fieldValue = processNonStruct(currVarName, type, ((Object[]) structDatas[i])[j]);
+                        fieldValue = processNonStruct(currVarName, type, ((Object[]) structDataArray[i])[j]);
                     }
                     fieldsToValues.put(fieldName, fieldValue);
                 }
@@ -103,7 +116,7 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
             result = structResult;
         } else {
             CellMatlabData cellResult = new CellMatlabData();
-            for (int i = 0; i < structDatas.length; i++) {
+            for (int i = 0; i < structDataArray.length; i++) {
                 StructMatlabData structResult = new StructMatlabData();
                 for (int j = 0; j < ((String[]) _data[0]).length; j++) {
                     String fieldName = ((String[]) _data[0])[j];
@@ -116,9 +129,9 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
                     // Branch according to the type
                     IVisitableMatlabData fieldValue = null;
                     if ("struct".equals(type)) {
-                        fieldValue = processStruct(currVarName, (Object[]) (((Object[]) structDatas[i])[j]));
+                        fieldValue = processStruct(currVarName, (Object[]) (((Object[]) structDataArray[i])[j]));
                     } else {
-                        fieldValue = processNonStruct(currVarName, type, ((Object[]) structDatas[i])[j]);
+                        fieldValue = processNonStruct(currVarName, type, ((Object[]) structDataArray[i])[j]);
                     }
                     fieldsToValues.put(fieldName, fieldValue);
                 }
@@ -133,20 +146,7 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
     }
 
 
-    private IVisitableMatlabData dataRetriever() {
-        IVisitableMatlabData result = null;
-        String type = (String) matlabInstance.returningEval("class(ImporterTmpResult)", 1)[0];
-        Object[] data = matlabInstance.returningEval("ImporterTmpResult(1:end)", 1);
-        // Switch according to the result of type = class(ImporterTmpResult)
-        if (type.equals("struct")) {
-            result = processStruct("ImporterTmpResult", data);
-        } else {
-            result = processNonStruct("ImporterTmpResult", type, data[0]);
-        }
-        return result;
-    }
-
-    private IVisitableMatlabData processNonStruct(String name, String type, Object data)  {
+    protected IVisitableMatlabData processNonStruct(String name, String type, Object data)  {
         IVisitableMatlabData result = null;
 
         if (type.equals("double")) {

@@ -780,7 +780,7 @@ public class Exporter {
         Set<Handle> linesToDelete = Sets.newHashSet();
         
         if(allQueriedLineHandles instanceof CellMatlabData){
-        	List<IVisitableMatlabData> lineHandles = ((CellMatlabData) allQueriedLineHandles).getDatas();
+        	List<IVisitableMatlabData> lineHandles = ((CellMatlabData) allQueriedLineHandles).getDataList();
         	for (IVisitableMatlabData iVisitableMatlabData : lineHandles) {
         		// If the ImporterTmpResult doesn't contain the result of the previous command
         		if(!(iVisitableMatlabData instanceof Handle)){
@@ -802,7 +802,7 @@ public class Exporter {
 					MatlabCommand getLineChildren = commandFactory.getParam().addParam(lineToCheck).addParam("LineChildren");
 					IVisitableMatlabData children = getLineChildren.execute();
 					// It exists in the model, has no children, but we did not exported it
-					if (children instanceof CellMatlabData && ((CellMatlabData)children).getDatas().size() == 0){
+					if (children instanceof CellMatlabData && ((CellMatlabData)children).getDataList().size() == 0){
 						linesToDelete.add(lineToCheck);
 					}
 					

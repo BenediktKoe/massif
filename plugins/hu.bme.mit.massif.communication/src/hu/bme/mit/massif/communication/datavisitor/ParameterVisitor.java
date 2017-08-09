@@ -39,11 +39,11 @@ public class ParameterVisitor implements IMatlabDataVisitor {
         if (compositeData.size() == 0) {
             return;
         }
-        String[] newCommandStrings = new String[commandStrings.length * compositeData.getDatas().size()];
+        String[] newCommandStrings = new String[commandStrings.length * compositeData.getDataList().size()];
         for (int i = 0; i < commandStrings.length; i++) {
-            for (int j = 0; j < compositeData.getDatas().size(); j++) {
-                newCommandStrings[i * compositeData.getDatas().size() + j] = commandStrings[i]
-                        + compositeData.getDatas().get(j) + ",";
+            for (int j = 0; j < compositeData.getDataList().size(); j++) {
+                newCommandStrings[i * compositeData.getDataList().size() + j] = commandStrings[i]
+                        + compositeData.getDataList().get(j) + ",";
             }
         }
         commandStrings = newCommandStrings;

@@ -784,7 +784,7 @@ public class Importer {
         }
 
         // For each sub block do the traversing
-        for (IVisitableMatlabData subBlockHandle : subBlockHandles.getDatas()) {
+        for (IVisitableMatlabData subBlockHandle : subBlockHandles.getDataList()) {
             if (Handle.getHandleData(subBlockHandle).compareTo(parentBlockHandle.getValue()) != 0) {
                 createBlock(parentBlock, (Handle) subBlockHandle);
             }

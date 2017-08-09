@@ -30,7 +30,7 @@ public class CellMatlabData implements IVisitableMatlabData {
         return dataList.size();
     }
 
-    public List<IVisitableMatlabData> getDatas() {
+    public List<IVisitableMatlabData> getDataList() {
         return dataList;
     }
 
