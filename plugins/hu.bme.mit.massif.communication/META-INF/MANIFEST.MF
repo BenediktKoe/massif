@@ -5,6 +5,7 @@ Bundle-SymbolicName: hu.bme.mit.massif.communication;singleton:=true
 Bundle-Version: 0.6.0.qualifier
 Export-Package: hu.bme.mit.massif.communication,
  hu.bme.mit.massif.communication.command,
+ hu.bme.mit.massif.communication.command.util,
  hu.bme.mit.massif.communication.datatype,
  hu.bme.mit.massif.communication.datavisitor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -19,11 +19,9 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
 	@Override
 	public IVisitableMatlabData evaluateCommands(String commandName, List<IVisitableMatlabData> params,
 			int outputArgumentCount) {
-		return internalEvaluateCommands(CommandStringGenerator.generate(commandName, params), outputArgumentCount);
-	}
-
-    private IVisitableMatlabData internalEvaluateCommands(String[] commandStrings, int outputArgumentCount) {
-        IVisitableMatlabData result = null;
+		String[] commandStrings = CommandStringGenerator.generate(commandName, params);
+	    
+		IVisitableMatlabData result = null;
         if (commandStrings.length > 1) {
             result = new CellMatlabData();
             for (String commandString : commandStrings) {
@@ -42,8 +40,8 @@ public class AbstractCommandEvaluator implements ICommandEvaluator {
 
         if (nargout > 1) {
             String resultString = "[";
-            for (Integer i = 0; i < nargout; i++) {
-                resultString = resultString.concat("r" + i.toString() + ",");
+            for (int i = 0; i < nargout; i++) {
+                resultString = resultString.concat("r" + i + ",");
             }
 
             resultString = resultString.replaceAll(",$", "").concat("]");
